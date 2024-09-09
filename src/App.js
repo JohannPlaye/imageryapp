@@ -1,23 +1,18 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
 import ImageSlider from './components/ImageSlider';
+import imageUrls from './data/images678'; // Importez la liste générée
 
 const App = () => {
   const [images, setImages] = useState([]);
   const [autoplay, setAutoplay] = useState(false);
 
   useEffect(() => {
-    // Remplacez ce tableau par la liste des images que vous obtenez depuis le backend
-    const imageUrls = [
-      'src/images/noaa/geocolor/10848/20242421250_GOES16-ABI-FD-GEOCOLOR-10848x10848.jpg',
-      'src/images/noaa/geocolor/10848/20242421300_GOES16-ABI-FD-GEOCOLOR-10848x10848.jpg',
-      // Ajoutez d'autres images
-    ];
     setImages(imageUrls);
   }, []);
 
   const toggleAutoplay = () => {
-    setAutoplay(!autoplay);
+    //setAutoplay(!autoplay);
   };
 
   return (
