@@ -1,14 +1,12 @@
 import React from 'react';
-import ImageViewer from './components/ImageViewer';
-import imageUrls from './data/images678'; // Assurez-vous que le chemin est correct
+import ImageViewer from './components/ImageViewer'; // Assurez-vous que ce chemin est correct
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <h1>Image Viewer</h1>
-      <ImageViewer images={imageUrls} />
+    <div>
+      <ImageViewer />
     </div>
   );
-}
+};
 
 export default App;
