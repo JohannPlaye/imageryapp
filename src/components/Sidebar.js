@@ -1,75 +1,64 @@
 import React from 'react';
-import { Drawer, IconButton, FormControl, InputLabel, Select, MenuItem, Divider, Typography, TextField } from '@mui/material';
+import { Drawer, IconButton, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'; // Import de TextField
 import CloseIcon from '@mui/icons-material/Close';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers';
 
-const Sidebar = ({ isOpen, onClose, onImageSetChange, imageSet, startDate, endDate, onDateChange }) => {
-  const handleDateChange = (newDate, isStartDate) => {
-    if (isStartDate) {
-      onDateChange('start', newDate);
-    } else {
-      onDateChange('end', newDate);
-    }
+const Sidebar = ({
+  isOpen,
+  onClose,
+  onDateChange,
+  startDate,
+  endDate,
+  onImageSetChange,
+  imageSet,
+}) => {
+
+  // Gestion du changement de jeu de données
+  const handleImageSetChange = (event) => {
+    const { value } = event.target; 
+    onImageSetChange(value); // Passer la valeur correcte
+  };
+  
+
+  const handleDateChange = (date, type) => {
+    onDateChange(type, date);
   };
 
   return (
-    <Drawer
-      variant="persistent"
-      anchor="left"
-      open={isOpen}
-      onClose={onClose}
-      sx={{
-        width: 300,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: 300,
-          boxSizing: 'border-box',
-        },
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', padding: '16px' }}>
-        <Typography variant="h6" style={{ flexGrow: 1 }}>
-          Paramètres
-        </Typography>
-        <IconButton onClick={onClose} style={{ color: 'black' }}>
+    <Drawer anchor="left" open={isOpen} onClose={onClose}>
+      <div style={{ width: 300, padding: 20 }}>
+        {/* Bouton de fermeture avec icône */}
+        <IconButton onClick={onClose} style={{ position: 'absolute', top: 10, right: 10 }}>
           <CloseIcon />
         </IconButton>
-      </div>
-      <Divider />
-      <div style={{ padding: '16px' }}>
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="image-set-select-label">Choisir un jeu d'images</InputLabel>
-          <Select
-            labelId="image-set-select-label"
-            value={imageSet}
-            onChange={onImageSetChange}
-            fullWidth
-          >
+
+        {/* Sélecteur de jeu d'images */}
+        <FormControl fullWidth style={{ marginBottom: 20 }}>
+          <InputLabel>Jeu d'images</InputLabel>
+          <Select value={imageSet} onChange={handleImageSetChange}>
             <MenuItem value="images678">Images 678</MenuItem>
             <MenuItem value="images1808">Images 1808</MenuItem>
           </Select>
         </FormControl>
-        <Divider />
-        <Typography variant="h6" style={{ margin: '16px 0' }}>
-          Période
-        </Typography>
+
+        {/* Sélection de la date */}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <DatePicker
-              label="Début"
-              value={startDate}
-              onChange={(newValue) => handleDateChange(newValue, true)}
-              renderInput={(params) => <TextField {...params} />}
-            />
-            <DatePicker
-              label="Fin"
-              value={endDate}
-              onChange={(newValue) => handleDateChange(newValue, false)}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </div>
+          <DatePicker
+            label="Date de début"
+            value={startDate}
+            onChange={(date) => handleDateChange(date, 'start')}
+            format="DD/MM/YYYY" // Spécifiez le format JJ/MM/AAAA
+            renderInput={(params) => <TextField {...params} fullWidth />}
+          />
+          <DatePicker
+            label="Date de fin"
+            value={endDate}
+            onChange={(date) => handleDateChange(date, 'end')}
+            format="DD/MM/YYYY" // Spécifiez le format JJ/MM/AAAA
+            renderInput={(params) => <TextField {...params} fullWidth />}
+          />
         </LocalizationProvider>
       </div>
     </Drawer>

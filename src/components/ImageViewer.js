@@ -16,8 +16,8 @@ const ImageViewer = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [startDate, setStartDate] = useState(dayjs().startOf('year'));
-  const [endDate, setEndDate] = useState(dayjs().endOf('year'));
+  const [startDate, setStartDate] = useState(dayjs().subtract(2, 'day'));
+  const [endDate, setEndDate] = useState(dayjs());
   const [imageSet, setImageSet] = useState('images678');
   const [filteredImageUrls, setFilteredImageUrls] = useState([]);
   const playRef = useRef(null);
@@ -64,10 +64,10 @@ const ImageViewer = () => {
   // Fonction pour charger les images
   const loadImages = async () => {
     try {
-      const module = await import(`../data/${imageSet}`);
+      const module = await import(`../data/${imageSet}`); // Charger dynamiquement le fichier correspondant
       const imageUrls = module.default;
-      console.log('Loaded image URLs:', imageUrls); // Log image URLs
-
+  
+      // Filtrer les images par date
       const filterImagesByDateRange = () => {
         const filteredImages = imageUrls.filter((url) => {
           const match = url.match(/\/(\d{4})(\d{3})(\d{2})(\d{2})_/);
@@ -78,26 +78,20 @@ const ImageViewer = () => {
               .dayOfYear(parseInt(dayOfYear))
               .hour(parseInt(hour))
               .minute(parseInt(minute));
-
-            // Log pour vérifier la date extraite
-            console.log(`Image URL: ${url}, Parsed Date: ${date.format()}`);
-
-            // Vérifier si la date est dans la plage sélectionnée
+  
             return date.isBetween(startDate, endDate, null, '[]');
-          } else {
-            console.warn(`Failed to extract date from URL: ${url}`);
-            return false;
           }
+          return false;
         });
-        console.log('Filtered image URLs:', filteredImages); // Log filtered URLs
+  
         setFilteredImageUrls(filteredImages);
       };
-
+  
       filterImagesByDateRange();
     } catch (error) {
       console.error('Error loading image set:', error);
     }
-  };
+  };  
 
   useEffect(() => {
     // Réinitialiser les index et arrêter l'autoplay lors du changement de jeu d'images
@@ -129,9 +123,11 @@ const ImageViewer = () => {
   };
 
   // Gestion du changement de jeu d'images
-  const handleImageSetChange = (event) => {
-    setImageSet(event.target.value);
-  };
+  const handleImageSetChange = (value) => {
+    if (value !== imageSet) {
+      setImageSet(value);
+    }
+  };  
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
