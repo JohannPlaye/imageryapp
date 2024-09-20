@@ -1,0 +1,22 @@
+.image-container {
+    position: relative;
+    width: 678px;
+    height: 678px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  
+  .image-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    opacity: 0;
+    transition: opacity 0.02s ease-in-out;
+  }
+  
+  .image-slide.active {
+    opacity: 1;
+  }
+  

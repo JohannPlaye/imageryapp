@@ -1,25 +1,22 @@
-// src/components/ImageSlider.js
 import React from 'react';
-import Slider from 'react-slick';
+import { Slider, Box } from '@mui/material';
 
-const ImageSlider = ({ images }) => {
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: false,
+const ImageSlider = ({ currentImageIndex, images, setCurrentImageIndex }) => {
+  const handleSliderChange = (event, newValue) => {
+    setCurrentImageIndex(newValue);
   };
 
   return (
-    <Slider {...settings}>
-      {images.map((img, index) => (
-        <div key={index}>
-          <img src={img} alt={`slide-${index}`} style={{ width: '100%', height: 'auto' }} />
-        </div>
-      ))}
-    </Slider>
+    <Box>
+      <Slider
+        value={currentImageIndex}
+        min={0}
+        max={images.length - 1}
+        onChange={handleSliderChange}
+        aria-labelledby="continuous-slider"
+        style={{ position: 'fixed', bottom: 20, left: '10%', width: '80%' }} // Slider at the bottom
+      />
+    </Box>
   );
 };
 

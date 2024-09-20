@@ -1,66 +1,121 @@
-import React from 'react';
-import { Drawer, IconButton, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'; // Import de TextField
-import CloseIcon from '@mui/icons-material/Close';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import React, { useState } from 'react';
+import { Drawer, Box, Divider, TextField, MenuItem, Button } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
+import 'dayjs/locale/fr';
 
-const Sidebar = ({
-  isOpen,
-  onClose,
-  onDateChange,
-  startDate,
-  endDate,
-  onImageSetChange,
-  imageSet,
-}) => {
+dayjs.locale('fr');
 
-  // Gestion du changement de jeu de données
+const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], setDateRange }) => {
+  const [imageSet, setImageSet] = useState('images678');
+  const [startDate, setStartDate] = useState(dateRange[0]);
+  const [endDate, setEndDate] = useState(dateRange[1]);
+  const [openStart, setOpenStart] = useState(false);
+  const [openEnd, setOpenEnd] = useState(false);
+
   const handleImageSetChange = (event) => {
-    const { value } = event.target; 
-    onImageSetChange(value); // Passer la valeur correcte
+    setImageSet(event.target.value);
   };
-  
 
-  const handleDateChange = (date, type) => {
-    onDateChange(type, date);
+  const handleStartDateChange = (newStartDate) => {
+    setStartDate(newStartDate ? dayjs(newStartDate) : null);
+  };
+
+  const handleEndDateChange = (newEndDate) => {
+    setEndDate(newEndDate ? dayjs(newEndDate) : null);
+  };
+
+  const handleValidation = () => {
+    setDateRange([startDate, endDate]);
+    onImageSetChange(imageSet);
+    onClose();
   };
 
   return (
-    <Drawer anchor="left" open={isOpen} onClose={onClose}>
-      <div style={{ width: 300, padding: 20 }}>
-        {/* Bouton de fermeture avec icône */}
-        <IconButton onClick={onClose} style={{ position: 'absolute', top: 10, right: 10 }}>
-          <CloseIcon />
-        </IconButton>
-
-        {/* Sélecteur de jeu d'images */}
-        <FormControl fullWidth style={{ marginBottom: 20 }}>
-          <InputLabel>Jeu d'images</InputLabel>
-          <Select value={imageSet} onChange={handleImageSetChange}>
+    <Drawer
+      anchor="left"
+      open={isOpen}
+      onClose={onClose}
+      sx={{ width: 250, flexShrink: 0 }}
+    >
+      <Box sx={{ width: 250, bgcolor: 'background.paper' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: 2,
+            bgcolor: 'grey.900',
+            color: 'white',
+          }}
+        >
+          <h1>Paramètres</h1> {/* Suppression du bouton en forme de croix */}
+        </Box>
+        <Divider />
+        <Box sx={{ padding: 2 }}>
+          {/* Sélecteur de jeu d'images avec espacement ajouté */}
+          <TextField
+            select
+            label="Jeu d'images"
+            value={imageSet}
+            onChange={handleImageSetChange}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            sx={{ marginBottom: 2 }} // Espacement ajouté ici
+          >
             <MenuItem value="images678">Images 678</MenuItem>
             <MenuItem value="images1808">Images 1808</MenuItem>
-          </Select>
-        </FormControl>
+          </TextField>
 
-        {/* Sélection de la date */}
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          {/* Date de début */}
           <DatePicker
             label="Date de début"
             value={startDate}
-            onChange={(date) => handleDateChange(date, 'start')}
-            format="DD/MM/YYYY" // Spécifiez le format JJ/MM/AAAA
-            renderInput={(params) => <TextField {...params} fullWidth />}
+            onChange={handleStartDateChange}
+            open={openStart}
+            onOpen={() => setOpenStart(true)}
+            onClose={() => setOpenStart(false)}
+            format="DD/MM/YYYY"
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                fullWidth
+                onClick={() => setOpenStart(true)}
+              />
+            )}
           />
-          <DatePicker
-            label="Date de fin"
-            value={endDate}
-            onChange={(date) => handleDateChange(date, 'end')}
-            format="DD/MM/YYYY" // Spécifiez le format JJ/MM/AAAA
-            renderInput={(params) => <TextField {...params} fullWidth />}
-          />
-        </LocalizationProvider>
-      </div>
+
+          {/* Espacement entre Date de début et Date de fin */}
+          <Box sx={{ marginTop: 2 }}>
+            <DatePicker
+              label="Date de fin"
+              value={endDate}
+              onChange={handleEndDateChange}
+              open={openEnd}
+              onOpen={() => setOpenEnd(true)}
+              onClose={() => setOpenEnd(false)}
+              format="DD/MM/YYYY"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  onClick={() => setOpenEnd(true)}
+                />
+              )}
+            />
+          </Box>
+
+          {/* Bouton Valider */}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleValidation}
+            sx={{ marginTop: 2, width: '100%' }}
+          >
+            Valider
+          </Button>
+        </Box>
+      </Box>
     </Drawer>
   );
 };
