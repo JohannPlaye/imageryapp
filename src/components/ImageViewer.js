@@ -64,6 +64,7 @@ const ImageViewer = ({ imageSet, startDate, endDate }) => {
         position: 'relative',
         maxWidth: '800px',
         margin: '0 auto',
+        marginTop: '50px', // Ajoute une marge de 50px en haut
       }}
     >
       {loading ? (
@@ -86,13 +87,13 @@ const ImageViewer = ({ imageSet, startDate, endDate }) => {
             min={0}
             max={images.length - 1}
             onChange={(event, newValue) => setCurrentIndex(newValue)}
-            sx={{ width: '80%', margin: '20px auto' }}
+            sx={{ width: '80%', margin: '20px auto', marginBottom: '0px' }}
           />
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'center',
-              marginTop: '20px',
+              marginTop: '0px', // Réduit l'espace entre le slider et le bouton "Play"
             }}
           >
             <IconButton
