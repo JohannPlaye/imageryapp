@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 # URL du site où les images sont hébergées
 BASE_URL="https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/"
 IMAGE_DIR="../public/images/noaa/geocolor/678"  # Chemin relatif au répertoire d'images local
-JS_FILE="../src/data/images678.js"  # Chemin relatif où le fichier JS sera généré
+JS_FILE="../src/data/geocolor678.js"  # Chemin relatif où le fichier JS sera généré
 
 # Créer le répertoire des images s'il n'existe pas
 mkdir -p "$IMAGE_DIR"

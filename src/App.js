@@ -10,8 +10,9 @@ import ImageViewer from './components/ImageViewer';
 
 const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedImageSet, setSelectedImageSet] = useState('images678');
-  const [dateRange, setDateRange] = useState([dayjs().subtract(2, 'day'), dayjs()]);
+  const [selectedImageSet, setSelectedImageSet] = useState('geocolor678');
+  const [dateRange, setDateRange] = useState([dayjs().subtract(1, 'day'), dayjs()]);
+  const [autoplaySpeed, setAutoplaySpeed] = useState(40); // Ajout de l'état pour la vitesse d'autoplay
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -53,6 +54,7 @@ const App = () => {
           imageSet={selectedImageSet}
           startDate={dateRange[0]}
           endDate={dateRange[1]}
+          autoplaySpeed={autoplaySpeed} // Assurez-vous de transmettre la vitesse d'autoplay
         />
 
         <Sidebar
@@ -61,6 +63,8 @@ const App = () => {
           onImageSetChange={handleImageSetChange}
           dateRange={dateRange}
           setDateRange={setDateRange}
+          autoplaySpeed={autoplaySpeed} // Ajout de la vitesse d'autoplay
+          setAutoplaySpeed={setAutoplaySpeed} // Ajout de la fonction pour mettre à jour la vitesse
         />
       </Box>
     </LocalizationProvider>

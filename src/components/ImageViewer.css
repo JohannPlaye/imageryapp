@@ -1,8 +1,25 @@
 .image-viewer {
   position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 50px;
 }
 
 .image-slider img {
   max-width: 100%;
   height: auto;
+}
+
+.slider-container {
+  width: 80%;
+  margin: 20px auto;
+}
+
+.icon-button {
+  color: white;
+  background-color: var(--primary-color);
+}
+
+.icon-button:hover {
+  background-color: var(--primary-dark-color);
 }

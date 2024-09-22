@@ -9,8 +9,8 @@ const ImageSet = ({ imageSet, onImageSetChange }) => {
     <div>
       <label htmlFor="image-set-select">Jeu d'images:</label>
       <select id="image-set-select" value={imageSet} onChange={handleChange}>
-        <option value="images678">Images 678</option>
-        <option value="images1808">Images 1808</option>
+        <option value="geocolor678">Images 678</option>
+        <option value="geocolor1808">Images 1808</option>
       </select>
     </div>
   );

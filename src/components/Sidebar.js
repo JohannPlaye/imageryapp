@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Drawer, IconButton, Box, Divider, TextField, MenuItem, Button } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Drawer, Box, Divider, TextField, MenuItem, Button, Slider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import 'dayjs/locale/fr';
@@ -8,13 +7,11 @@ import eventsData from '../data/events.json'; // Importation des événements
 
 dayjs.locale('fr');
 
-const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], setDateRange }) => {
-  const [imageSet, setImageSet] = useState('images678');
+const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], setDateRange, autoplaySpeed, setAutoplaySpeed }) => {
+  const [imageSet, setImageSet] = useState('geocolor678');
   const [startDate, setStartDate] = useState(dateRange[0]);
   const [endDate, setEndDate] = useState(dateRange[1]);
   const [selectedEvent, setSelectedEvent] = useState(null); // Nouveau state pour l'événement
-  const [openStart, setOpenStart] = useState(false);
-  const [openEnd, setOpenEnd] = useState(false);
 
   const handleImageSetChange = (event) => {
     setImageSet(event.target.value);
@@ -52,6 +49,10 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
     onClose();
   };
 
+  const handleSpeedChange = (event, newValue) => {
+    setAutoplaySpeed(newValue);
+  };
+
   return (
     <Drawer
       anchor="left"
@@ -85,8 +86,10 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
             margin="normal"
             sx={{ marginBottom: 2 }}
           >
-            <MenuItem value="images678">Images 678</MenuItem>
-            <MenuItem value="images1808">Images 1808</MenuItem>
+            <MenuItem value="geocolor678">Geocolor 678</MenuItem>
+            <MenuItem value="geocolor1808">Geocolor 1808</MenuItem>
+            <MenuItem value="nearIRCirrus678">Near IR Cirrus 678</MenuItem>
+            <MenuItem value="nearIRCirrus5424">Near IR Cirrus 5424</MenuItem>
           </TextField>
 
           {/* Sélecteur d'événement */}
@@ -116,15 +119,11 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
                 label="Date de début"
                 value={startDate}
                 onChange={handleStartDateChange}
-                open={openStart}
-                onOpen={() => setOpenStart(true)}
-                onClose={() => setOpenStart(false)}
                 format="DD/MM/YYYY"
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     fullWidth
-                    onClick={() => setOpenStart(true)}
                   />
                 )}
               />
@@ -134,21 +133,30 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
                   label="Date de fin"
                   value={endDate}
                   onChange={handleEndDateChange}
-                  open={openEnd}
-                  onOpen={() => setOpenEnd(true)}
-                  onClose={() => setOpenEnd(false)}
                   format="DD/MM/YYYY"
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       fullWidth
-                      onClick={() => setOpenEnd(true)}
                     />
                   )}
                 />
               </Box>
             </>
           )}
+
+          {/* Slider pour la vitesse d'autoplay */}
+          <Box sx={{ marginTop: 4 }}>
+            <label>Vitesse de défilement (ms): {autoplaySpeed}</label>
+            <Slider
+              value={autoplaySpeed}
+              min={10}
+              max={2000}
+              step={10}
+              onChange={handleSpeedChange}
+              sx={{ marginBottom: 4 }}
+            />
+          </Box>
 
           {/* Bouton Valider */}
           <Button

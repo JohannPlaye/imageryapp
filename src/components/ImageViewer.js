@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import imageUrls678 from '../data/images678';
-import imageUrls1808 from '../data/images1808';
+import React, { useEffect, useState, useRef } from 'react';
 import { Slider, IconButton, Box } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
@@ -10,52 +8,92 @@ import ProgressOverlay from './ProgressOverlay';
 
 dayjs.extend(dayOfYear);
 
-const ImageViewer = ({ imageSet, startDate, endDate }) => {
+const requireImageLists = require.context('../data', false, /\.js$/);
+
+const imageSets = requireImageLists.keys().reduce((sets, file) => {
+  const name = file.replace('./', '').replace('.js', '');
+  sets[name] = requireImageLists(file).default;
+  return sets;
+}, {});
+
+const ImageViewer = ({ imageSet, startDate, endDate, autoplaySpeed }) => { // Utilisation de la prop autoplaySpeed
   const [images, setImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [autoplayInterval, setAutoplayInterval] = useState(40);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loading, setLoading] = useState(true);
+  const preloadedImages = useRef([]);
 
   useEffect(() => {
-    const allImages = imageSet === 'images678' ? imageUrls678 : imageUrls1808;
+    const allImages = imageSets[imageSet] || [];
+
+    if (allImages.length === 0) {
+      console.error(`Aucun jeu d'images trouvé pour "${imageSet}"`);
+      setLoadingProgress(100);
+      setLoading(false);
+      return;
+    }
 
     const filteredImages = allImages.filter((url) => {
-      const dateStr = url.match(/(\d{8})/)[0];
-      const year = parseInt(dateStr.slice(0, 4), 10);
-      const dayOfYearNum = parseInt(dateStr.slice(4, 7), 10);
-      const date = dayjs().year(year).dayOfYear(dayOfYearNum);
-      return date.isAfter(startDate) && date.isBefore(endDate.add(1, 'day'));
+      const match = url.match(/(\d{8})/);
+      if (match) {
+        const dateStr = match[0];
+        const year = parseInt(dateStr.slice(0, 4), 10);
+        const dayOfYearNum = parseInt(dateStr.slice(4, 7), 10);
+        const date = dayjs().year(year).dayOfYear(dayOfYearNum);
+        return date.isAfter(startDate) && date.isBefore(endDate.add(1, 'day'));
+      }
+      return false;
     });
 
-    setLoading(true); 
-    setImages(filteredImages);
-    setCurrentIndex(0);
-    
+    setLoading(true);
+    preloadedImages.current = [];
     const totalImages = filteredImages.length;
-    filteredImages.forEach((_, index) => {
-      setTimeout(() => {
-        setLoadingProgress(((index + 1) / totalImages) * 100);
-        if (index === totalImages - 1) {
-          setLoading(false);
-        }
-      }, index * 100);
-    });
+
+    if (totalImages === 0) {
+      setLoadingProgress(100);
+      setLoading(false);
+    } else {
+      filteredImages.forEach((src, index) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+          preloadedImages.current[index] = img.src;
+          setLoadingProgress(((index + 1) / totalImages) * 100);
+          if (index === totalImages - 1) {
+            setLoading(false);
+            setImages(preloadedImages.current);
+          }
+        };
+      });
+    }
   }, [imageSet, startDate, endDate]);
 
   useEffect(() => {
+    let timeoutId;
     if (isPlaying && images.length > 0) {
-      const interval = setInterval(() => {
+      const playImages = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-      }, autoplayInterval);
-      return () => clearInterval(interval);
+        timeoutId = setTimeout(playImages, autoplaySpeed); // Utilise la vitesse personnalisée
+      };
+      timeoutId = setTimeout(playImages, autoplaySpeed);
+      return () => clearTimeout(timeoutId);
     }
-  }, [isPlaying, images, autoplayInterval]);
+  }, [isPlaying, images, autoplaySpeed]); // autoplaySpeed est maintenant une prop
 
   const handlePlayPause = () => {
     setIsPlaying((prev) => !prev);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.code === 'Space') {
+        handlePlayPause();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <Box
@@ -64,7 +102,7 @@ const ImageViewer = ({ imageSet, startDate, endDate }) => {
         position: 'relative',
         maxWidth: '800px',
         margin: '0 auto',
-        marginTop: '50px', // Ajoute une marge de 50px en haut
+        marginTop: '50px',
       }}
     >
       {loading ? (
@@ -89,13 +127,7 @@ const ImageViewer = ({ imageSet, startDate, endDate }) => {
             onChange={(event, newValue) => setCurrentIndex(newValue)}
             sx={{ width: '80%', margin: '20px auto', marginBottom: '0px' }}
           />
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: '0px', // Réduit l'espace entre le slider et le bouton "Play"
-            }}
-          >
+          <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
             <IconButton
               onClick={handlePlayPause}
               sx={{
@@ -108,6 +140,17 @@ const ImageViewer = ({ imageSet, startDate, endDate }) => {
             >
               {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
             </IconButton>
+          </Box>
+          <Box sx={{ width: '80%', margin: '20px auto' }}>
+            <Slider
+              value={autoplaySpeed}
+              min={10}
+              max={2000}
+              step={10}
+              disabled // Désactive ce slider si tu ne veux pas le modifier ici
+              aria-labelledby="Autoplay Speed"
+              sx={{ marginTop: '20px' }}
+            />
           </Box>
         </>
       )}
