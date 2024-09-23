@@ -5,6 +5,7 @@ import PauseIcon from '@mui/icons-material/Pause';
 import dayjs from 'dayjs';
 import dayOfYear from 'dayjs/plugin/dayOfYear';
 import ProgressOverlay from './ProgressOverlay';
+import PropTypes from 'prop-types'; // Ajoute cette ligne
 
 dayjs.extend(dayOfYear);
 
@@ -16,7 +17,7 @@ const imageSets = requireImageLists.keys().reduce((sets, file) => {
   return sets;
 }, {});
 
-const ImageViewer = ({ imageSet, startDate, endDate, autoplaySpeed }) => { // Utilisation de la prop autoplaySpeed
+const ImageViewer = ({ imageSet, startDate, endDate, autoplaySpeed }) => {
   const [images, setImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -74,12 +75,12 @@ const ImageViewer = ({ imageSet, startDate, endDate, autoplaySpeed }) => { // Ut
     if (isPlaying && images.length > 0) {
       const playImages = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-        timeoutId = setTimeout(playImages, autoplaySpeed); // Utilise la vitesse personnalisée
+        timeoutId = setTimeout(playImages, autoplaySpeed);
       };
       timeoutId = setTimeout(playImages, autoplaySpeed);
       return () => clearTimeout(timeoutId);
     }
-  }, [isPlaying, images, autoplaySpeed]); // autoplaySpeed est maintenant une prop
+  }, [isPlaying, images, autoplaySpeed]);
 
   const handlePlayPause = () => {
     setIsPlaying((prev) => !prev);
@@ -141,21 +142,17 @@ const ImageViewer = ({ imageSet, startDate, endDate, autoplaySpeed }) => { // Ut
               {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
             </IconButton>
           </Box>
-          <Box sx={{ width: '80%', margin: '20px auto' }}>
-            <Slider
-              value={autoplaySpeed}
-              min={10}
-              max={2000}
-              step={10}
-              disabled // Désactive ce slider si tu ne veux pas le modifier ici
-              aria-labelledby="Autoplay Speed"
-              sx={{ marginTop: '20px' }}
-            />
-          </Box>
         </>
       )}
     </Box>
   );
+};
+
+ImageViewer.propTypes = {
+  imageSet: PropTypes.string.isRequired,
+  startDate: PropTypes.instanceOf(dayjs).isRequired,
+  endDate: PropTypes.instanceOf(dayjs).isRequired,
+  autoplaySpeed: PropTypes.number.isRequired,
 };
 
 export default ImageViewer;

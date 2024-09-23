@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Drawer, Box, Divider, TextField, MenuItem, Button, Slider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import 'dayjs/locale/fr';
 import eventsData from '../data/events.json'; // Importation des événements
+import PropTypes from 'prop-types'; // Ajoute cette ligne pour PropTypes
 
 dayjs.locale('fr');
 
@@ -171,6 +172,17 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
       </Box>
     </Drawer>
   );
+};
+
+// Ajoute la validation des props
+Sidebar.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onImageSetChange: PropTypes.func.isRequired,
+  dateRange: PropTypes.arrayOf(PropTypes.instanceOf(dayjs)),
+  setDateRange: PropTypes.func.isRequired,
+  autoplaySpeed: PropTypes.number.isRequired,
+  setAutoplaySpeed: PropTypes.func.isRequired,
 };
 
 export default Sidebar;
