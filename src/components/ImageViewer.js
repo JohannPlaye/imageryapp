@@ -1,13 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Slider, IconButton, Box } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import dayjs from 'dayjs';
 import dayOfYear from 'dayjs/plugin/dayOfYear';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import ProgressOverlay from './ProgressOverlay';
-import PropTypes from 'prop-types'; // Ajoute cette ligne
+import PropTypes from 'prop-types';
 
 dayjs.extend(dayOfYear);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+
+// Créer un cache en mémoire pour les images
+const imageCache = new Map();
 
 const requireImageLists = require.context('../data', false, /\.js$/);
 
@@ -25,6 +32,14 @@ const ImageViewer = ({ imageSet, startDate, endDate, autoplaySpeed }) => {
   const [loading, setLoading] = useState(true);
   const preloadedImages = useRef([]);
 
+  // Log des props reçues
+  useEffect(() => {
+    console.log("Changement détecté dans ImageViewer :");
+    console.log("Jeu d'images :", imageSet);
+    console.log("Plage de dates :", startDate.format("YYYY-MM-DD"), endDate.format("YYYY-MM-DD"));
+    console.log("Vitesse d'autoplay :", autoplaySpeed);
+  }, [imageSet, startDate, endDate, autoplaySpeed]);
+
   useEffect(() => {
     const allImages = imageSets[imageSet] || [];
 
@@ -35,56 +50,100 @@ const ImageViewer = ({ imageSet, startDate, endDate, autoplaySpeed }) => {
       return;
     }
 
+    // Filtrage des images basées sur la plage de dates sans tri supplémentaire
     const filteredImages = allImages.filter((url) => {
-      const match = url.match(/(\d{8})/);
+      const match = url.match(/(\d{4})(\d{3})(\d{2})(\d{2})/); // Correspond à l'année, jour de l'année, heure, et minute
       if (match) {
-        const dateStr = match[0];
-        const year = parseInt(dateStr.slice(0, 4), 10);
-        const dayOfYearNum = parseInt(dateStr.slice(4, 7), 10);
-        const date = dayjs().year(year).dayOfYear(dayOfYearNum);
-        return date.isAfter(startDate) && date.isBefore(endDate.add(1, 'day'));
+        const year = parseInt(match[1], 10);
+        const dayOfYear = parseInt(match[2], 10);
+
+        // Créer un objet date basé sur l'année et le jour de l'année
+        const imageDate = dayjs().set('year', year).dayOfYear(dayOfYear);
+
+        // Comparer l'image avec la plage de dates sélectionnée
+        return imageDate.isSameOrAfter(startDate, 'day') && imageDate.isSameOrBefore(endDate, 'day');
       }
       return false;
     });
 
     setLoading(true);
-    preloadedImages.current = [];
+    preloadedImages.current = Array(filteredImages.length).fill(null); // Tableau vide pour stocker les images chargées
     const totalImages = filteredImages.length;
+
+    const batchSize = 100;
+    let batchIndex = 0;
+    let loadedImagesCount = 0;
+
+    const loadNextBatch = () => {
+      const batchImages = filteredImages.slice(batchIndex, batchIndex + batchSize);
+
+      batchImages.forEach((src, index) => {
+        const actualIndex = batchIndex + index; // Conserver l'index exact de l'image
+
+        if (imageCache.has(src)) {
+          preloadedImages.current[actualIndex] = imageCache.get(src);
+          loadedImagesCount += 1;
+          setLoadingProgress(Math.min(100, (loadedImagesCount / totalImages) * 100));
+          if (loadedImagesCount === totalImages) {
+            setLoading(false);
+            setImages([...preloadedImages.current]); // Mettez à jour une fois toutes les images chargées
+          }
+        } else {
+          const img = new Image();
+          img.src = src;
+          img.onload = () => {
+            imageCache.set(src, img.src);
+            preloadedImages.current[actualIndex] = img.src;
+            loadedImagesCount += 1;
+            setLoadingProgress(Math.min(100, (loadedImagesCount / totalImages) * 100));
+            if (loadedImagesCount === totalImages) {
+              setLoading(false);
+              setImages([...preloadedImages.current]); // Mettez à jour une fois toutes les images chargées
+            }
+          };
+        }
+      });
+      batchIndex += batchSize;
+      if (batchIndex < filteredImages.length) {
+        setTimeout(loadNextBatch, 200);
+      }
+    };
 
     if (totalImages === 0) {
       setLoadingProgress(100);
       setLoading(false);
     } else {
-      filteredImages.forEach((src, index) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = () => {
-          preloadedImages.current[index] = img.src;
-          setLoadingProgress(((index + 1) / totalImages) * 100);
-          if (index === totalImages - 1) {
-            setLoading(false);
-            setImages(preloadedImages.current);
-          }
-        };
-      });
+      loadNextBatch();
     }
   }, [imageSet, startDate, endDate]);
 
   useEffect(() => {
-    let timeoutId;
-    if (isPlaying && images.length > 0) {
-      const playImages = () => {
+    let animationFrameId;
+    let startTime;
+
+    const playImages = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+
+      if (elapsed >= autoplaySpeed) {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-        timeoutId = setTimeout(playImages, autoplaySpeed);
-      };
-      timeoutId = setTimeout(playImages, autoplaySpeed);
-      return () => clearTimeout(timeoutId);
+        startTime = timestamp;
+      }
+      animationFrameId = requestAnimationFrame(playImages);
+    };
+
+    if (isPlaying && images.length > 0) {
+      animationFrameId = requestAnimationFrame(playImages);
     }
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
   }, [isPlaying, images, autoplaySpeed]);
 
-  const handlePlayPause = () => {
+  const handlePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
-  };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -94,7 +153,7 @@ const ImageViewer = ({ imageSet, startDate, endDate, autoplaySpeed }) => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [handlePlayPause]);
 
   return (
     <Box

@@ -23,7 +23,18 @@ const App = () => {
   };
 
   const handleImageSetChange = (newImageSet) => {
+    console.log("Changement de jeu d'images :", newImageSet); // Log pour vérifier le changement de jeu d'images
     setSelectedImageSet(newImageSet);
+  };
+
+  const handleDateRangeChange = (newDateRange) => {
+    console.log("Changement de plage de dates :", newDateRange); // Log pour vérifier le changement de plage de dates
+    setDateRange(newDateRange);
+  };
+
+  const handleAutoplaySpeedChange = (newSpeed) => {
+    console.log("Changement de vitesse d'autoplay :", newSpeed); // Log pour vérifier le changement de vitesse d'autoplay
+    setAutoplaySpeed(newSpeed);
   };
 
   return (
@@ -62,9 +73,9 @@ const App = () => {
           onClose={handleCloseSidebar}
           onImageSetChange={handleImageSetChange}
           dateRange={dateRange}
-          setDateRange={setDateRange}
+          setDateRange={handleDateRangeChange}
           autoplaySpeed={autoplaySpeed} // Ajout de la vitesse d'autoplay
-          setAutoplaySpeed={setAutoplaySpeed} // Ajout de la fonction pour mettre à jour la vitesse
+          setAutoplaySpeed={handleAutoplaySpeedChange} // Ajout de la fonction pour mettre à jour la vitesse
         />
       </Box>
     </LocalizationProvider>

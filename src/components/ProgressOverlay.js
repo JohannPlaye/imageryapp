@@ -1,6 +1,7 @@
 import React from 'react';
 import { CircularProgress, Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';  // Utiliser le thème pour la couleur
+import PropTypes from 'prop-types';  // Importation de PropTypes pour la validation
 
 const ProgressOverlay = ({ progress }) => {
   const theme = useTheme();  // Récupérer le thème Material UI pour utiliser la couleur principale
@@ -52,6 +53,11 @@ const ProgressOverlay = ({ progress }) => {
       </Box>
     </Box>
   );
+};
+
+// Validation des props avec PropTypes
+ProgressOverlay.propTypes = {
+  progress: PropTypes.number.isRequired,  // Validation du prop "progress"
 };
 
 export default ProgressOverlay;

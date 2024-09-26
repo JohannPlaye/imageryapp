@@ -45,6 +45,10 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
   };
 
   const handleValidation = () => {
+    console.log("Validation appelée"); // Log pour vérifier si la validation est appelée
+    console.log("Jeu d'images sélectionné :", imageSet); // Log pour vérifier l'imageSet sélectionné
+    console.log("Plage de dates sélectionnée :", startDate, endDate); // Log pour vérifier les dates sélectionnées
+
     setDateRange([startDate, endDate]);
     onImageSetChange(imageSet);
     onClose();
