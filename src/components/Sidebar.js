@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Drawer, Box, Divider, TextField, MenuItem, Button, Slider, Typography } from '@mui/material';
+import { Drawer, Box, Divider, TextField, MenuItem, Button, Slider, Typography, Switch } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import 'dayjs/locale/fr';
@@ -16,6 +16,7 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
   const [endDate, setEndDate] = useState(dateRange[1]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEventLinks, setSelectedEventLinks] = useState([]);
+  const [isEventSearch, setIsEventSearch] = useState(false); // État pour le switch "Rechercher un événement naturel"
 
   const handleImageSetChange = (event) => {
     setImageSet(event.target.value);
@@ -54,13 +55,29 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
     console.log("Jeu d'images sélectionné :", imageSet);
     console.log("Plage de dates sélectionnée :", startDate, endDate);
 
-    setDateRange([startDate, endDate]);
-    onImageSetChange(imageSet);
+    // Forcer la mise à jour des dates avec l'événement sélectionné
+    if (isEventSearch && selectedEvent) {
+      const selectedEventObj = eventsData.find((evt) => evt.name === selectedEvent);
+      if (selectedEventObj) {
+        const newStartDate = dayjs(selectedEventObj.startDate, 'DDMMYYYY');
+        const newEndDate = dayjs(selectedEventObj.endDate, 'DDMMYYYY');
+        setDateRange([newStartDate, newEndDate]); // Mettre à jour la plage de dates avec l'événement sélectionné
+      }
+    } else {
+      setDateRange([startDate, endDate]); // Mettre à jour la plage de dates avec les sélecteurs
+    }
+
+    onImageSetChange(imageSet); // Mise à jour du jeu d'images
     onClose();
   };
 
   const handleSpeedChange = (event, newValue) => {
     setAutoplaySpeed(newValue);
+  };
+
+  const handleEventSearchToggle = (event) => {
+    setIsEventSearch(event.target.checked);
+    setSelectedEvent(null); // Réinitialiser l'événement sélectionné lorsque le switch est changé
   };
 
   const selectedImageSet = imageSetsData.find((set) => set.value === imageSet);
@@ -114,7 +131,7 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
                   href={selectedImageSet.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="custom-link" // Utilisation de la classe CSS pour appliquer le style du lien
+                  className="custom-link"
                 >
                   cette page
                 </a>.
@@ -122,28 +139,70 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
             </Box>
           )}
 
-          {/* Sélecteur d'événement */}
-          <TextField
-            select
-            label="Événement"
-            value={selectedEvent || ''}
-            onChange={handleEventChange}
-            fullWidth
-            variant="outlined"
-            margin="normal"
-            sx={{ marginBottom: 2 }}
-          >
-            <MenuItem value="">Aucun événement</MenuItem>
-            {eventsData.map((event) => (
-              <MenuItem key={event.name} value={event.name}>
-                {event.name}
-              </MenuItem>
-            ))}
-          </TextField>
+          {/* Switch pour rechercher un événement naturel avec libellé aligné */}
+          <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: '0.8rem', marginRight: 'auto' }} // Alignement à gauche
+            >
+              Rechercher un événement naturel
+            </Typography>
+            <Switch
+              checked={isEventSearch}
+              onChange={handleEventSearchToggle}
+              sx={{ marginLeft: 'auto' }} // Alignement à droite
+            />
+          </Box>
 
-          {/* Affichage conditionnel des datepickers */}
-          {!selectedEvent && (
+          {/* Affichage conditionnel des événements ou des datepickers */}
+          {isEventSearch ? (
             <>
+              {/* Sélecteur d'événement */}
+              <TextField
+                select
+                label="Événement"
+                value={selectedEvent || ''}
+                onChange={handleEventChange}
+                fullWidth
+                variant="outlined"
+                margin="normal"
+                sx={{ marginBottom: 2 }}
+              >
+                <MenuItem value="">Aucun événement</MenuItem>
+                {eventsData.map((event) => (
+                  <MenuItem key={event.name} value={event.name}>
+                    {event.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              {/* Affichage des liens de l'événement sélectionné */}
+              {selectedEventLinks.length > 0 && (
+                <Box sx={{ marginBottom: 2 }}>
+                  <Typography sx={{ fontSize: '10px', color: 'grey.900' }}>
+                    Pour plus d&apos;informations sur cet événement :
+                  </Typography>
+                  <Typography sx={{ fontSize: '10px', color: 'grey.900' }}>
+                    {selectedEventLinks.map((link, index) => (
+                      <span key={link.url}>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="custom-link"
+                        >
+                          {link.name}
+                        </a>
+                        {index < selectedEventLinks.length - 1 && ' - '}
+                      </span>
+                    ))}
+                  </Typography>
+                </Box>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Date de début */}
               <DatePicker
                 label="Date de début"
                 value={startDate}
@@ -157,6 +216,7 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
                 )}
               />
 
+              {/* Date de fin */}
               <Box sx={{ marginTop: 2 }}>
                 <DatePicker
                   label="Date de fin"
@@ -172,30 +232,6 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
                 />
               </Box>
             </>
-          )}
-
-          {/* Affichage des liens de l'événement sélectionné */}
-          {selectedEventLinks.length > 0 && (
-            <Box sx={{ marginBottom: 2 }}>
-              <Typography sx={{ fontSize: '10px', color: 'grey.900' }}>
-                Pour plus d&apos;informations sur cet événement :
-              </Typography>
-              <Typography sx={{ fontSize: '10px', color: 'grey.900' }}>
-                {selectedEventLinks.map((link, index) => (
-                  <span key={link.url}>
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="custom-link" // Utilisation de la classe CSS pour appliquer les styles
-                    >
-                      {link.name}
-                    </a>
-                    {index < selectedEventLinks.length - 1 && ' - '}
-                  </span>
-                ))}
-              </Typography>
-            </Box>
           )}
 
           {/* Slider pour la vitesse d'autoplay */}
