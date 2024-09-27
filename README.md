@@ -84,12 +84,12 @@ http://localhost:3000
     ... [Autres listes d'images]
 
 ### Description des fichiers
-App.js : le composant principal de l'application qui gère la logique générale et intègre la sidebar et le visionneur d'images.
-Sidebar.js : la barre latérale permettant de configurer les paramètres d'affichage des images (jeu d'images, dates, événements, etc.).
-ImageViewer.js : le composant qui affiche les images et gère le défilement automatique ou manuel.
-ProgressOverlay.js : un composant d'overlay qui affiche l'avancement du préchargement des images.
-/scripts : scripts Bash utilisés pour télécharger les images depuis des sources externes (comme la NOAA NESDIS STAR) et générer des fichiers JS contenant les listes d'images.
-/data : répertoire contenant les fichiers JS générés automatiquement par les scripts Bash, tels que geocolor678.js, qui répertorient les URLs des images à afficher.
+- App.js : le composant principal de l'application qui gère la logique générale et intègre la sidebar et le visionneur d'images.
+- Sidebar.js : la barre latérale permettant de configurer les paramètres d'affichage des images (jeu d'images, dates, événements, etc.).
+- ImageViewer.js : le composant qui affiche les images et gère le défilement automatique ou manuel.
+- ProgressOverlay.js : un composant d'overlay qui affiche l'avancement du préchargement des images.
+- /scripts : scripts Bash utilisés pour télécharger les images depuis des sources externes (comme la NOAA NESDIS STAR) et générer des fichiers JS contenant les listes d'images.
+- /data : répertoire contenant les fichiers JS générés automatiquement par les scripts Bash, tels que geocolor678.js, qui répertorient les URLs des images à afficher.
 
 ## Scripts bash
 ### downloadMain.sh
