@@ -1,70 +1,109 @@
-# Getting Started with Create React App
+# Projet de visualisation d'images satellites
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description
 
-## Available Scripts
+Ce projet est une application React qui permet d'afficher des images satellites provenant de différentes sources, telles que la NOAA NESDIS STAR. L'application permet de précharger et de visualiser les images de manière fluide, avec une navigation manuelle ou automatique à travers une interface utilisateur moderne basée sur Material-UI. Les utilisateurs peuvent également filtrer les images par date ou par événement naturel spécifique, ainsi qu'ajuster la vitesse de défilement des images.
 
-In the project directory, you can run:
+À l'avenir, d'autres sources d'images satellites, comme celles de **EUMETSAT** couvrant l'Europe et l'océan Indien, seront ajoutées.
 
-### `npm start`
+## Fonctionnalités principales
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Affichage d'images satellites de la NOAA (exemple : **Geocolor**, **Airmass**).
+- Filtrage des images par **plage de dates** ou par **événement naturel**.
+- Lecture automatique ou manuelle des images avec ajustement de la vitesse de défilement.
+- Gestion des événements naturels via une interface permettant de basculer entre **recherche par dates** ou **recherche par événements**.
+- Intégration de **Material-UI** pour une expérience utilisateur moderne et réactive.
+- Utilisation d'une sidebar pour configurer les paramètres de visualisation, comme le jeu d'images, les dates ou la vitesse de défilement.
+- Cache des images pour améliorer les performances de préchargement.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Technologies utilisées
 
-### `npm test`
+- **React** : pour la construction de l'interface utilisateur.
+- **Material-UI (MUI)** : pour les composants de l'interface.
+- **Day.js** : pour la gestion des dates et leur manipulation.
+- **Bash Scripts** : pour automatiser le téléchargement des images satellites et la génération de fichiers contenant les listes d'images à afficher.
+- **NOAA NESDIS STAR** : en tant qu'exemple de source d'images, avec la possibilité d'ajouter des images d'autres sources (comme EUMETSAT).
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Installation et configuration
 
-### `npm run build`
+### Prérequis
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Node.js** et **npm** doivent être installés.
+- **Git** pour cloner le projet.
+- Un environnement capable d'exécuter des scripts Bash (par exemple, un système Unix/Linux ou un émulateur Bash sous Windows).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Étapes d'installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Cloner le dépôt :
 
-### `npm run eject`
+   ```bash
+   git clone https://github.com/votre-repo-url.git
+   cd votre-repo
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+2. Installer les dépendances Node.js :
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   ```bash
+    npm install
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+3. Pour télécharger les jeux d'images et générer les fichiers JS associés, exécuter le script downloadMain.sh :
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   ```bash
+    cd scripts
+    ./downloadMain.sh
 
-## Learn More
+4. Démarrer l'application React :
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   ```bash
+    npm start
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+5. Ouvrez votre navigateur à l'adresse suivante :
+http://localhost:3000
 
-### Code Splitting
+## Structure du projet
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+/public
+  /images
+    /noaa
+      /geocolor
+      /airmass
+    ... [Autres sources d'images]
+/scripts
+  downloadMain.sh
+  geocolor678.sh
+  ... [Autres scripts de téléchargement]
+/src
+  /components
+    App.js
+    Sidebar.js
+    ImageViewer.js
+    ProgressOverlay.js
+  /data
+    geocolor678.js
+    events.json
+    imageSets.json
+    ... [Autres listes d'images]
 
-### Analyzing the Bundle Size
+### Description des fichiers
+App.js : le composant principal de l'application qui gère la logique générale et intègre la sidebar et le visionneur d'images.
+Sidebar.js : la barre latérale permettant de configurer les paramètres d'affichage des images (jeu d'images, dates, événements, etc.).
+ImageViewer.js : le composant qui affiche les images et gère le défilement automatique ou manuel.
+ProgressOverlay.js : un composant d'overlay qui affiche l'avancement du préchargement des images.
+/scripts : scripts Bash utilisés pour télécharger les images depuis des sources externes (comme la NOAA NESDIS STAR) et générer des fichiers JS contenant les listes d'images.
+/data : répertoire contenant les fichiers JS générés automatiquement par les scripts Bash, tels que geocolor678.js, qui répertorient les URLs des images à afficher.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Scripts bash
+### downloadMain.sh
+Ce script principal exécute tous les scripts individuels de téléchargement pour les différents jeux d'images. Il assure le bon ordre d'exécution des scripts et évite d'exécuter le script principal lui-même.
 
-### Making a Progressive Web App
+### Ajout de nouvelles sources d'images
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Pour ajouter de nouvelles sources d'images (par exemple, d'autres satellites comme ceux de EUMETSAT), il suffira de suivre la même logique que pour la NOAA :
 
-### Advanced Configuration
+Créer un script spécifique pour la nouvelle source, similaire à geocolor678.sh.
+Ajouter le nouveau script au répertoire /scripts.
+Mettre à jour le fichier downloadMain.sh pour exécuter automatiquement le nouveau script.
+Ajouter un fichier .js correspondant dans le répertoire /data, qui sera mis à jour automatiquement par le script.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Licence
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
