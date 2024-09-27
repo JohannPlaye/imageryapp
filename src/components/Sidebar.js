@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Drawer, Box, Divider, TextField, MenuItem, Button, Slider } from '@mui/material';
+import { Drawer, Box, Divider, TextField, MenuItem, Button, Slider, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import 'dayjs/locale/fr';
 import eventsData from '../data/events.json'; // Importation des événements
-import PropTypes from 'prop-types'; // Ajoute cette ligne pour PropTypes
+import imageSetsData from '../data/imageSets.json'; // Importation du fichier JSON des jeux d'images
+import PropTypes from 'prop-types';
+import './Sidebar.css';
 
 dayjs.locale('fr');
 
@@ -12,7 +14,8 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
   const [imageSet, setImageSet] = useState('geocolor678');
   const [startDate, setStartDate] = useState(dateRange[0]);
   const [endDate, setEndDate] = useState(dateRange[1]);
-  const [selectedEvent, setSelectedEvent] = useState(null); // Nouveau state pour l'événement
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEventLinks, setSelectedEventLinks] = useState([]);
 
   const handleImageSetChange = (event) => {
     setImageSet(event.target.value);
@@ -29,10 +32,12 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
         const newEndDate = dayjs(selectedEventObj.endDate, 'DDMMYYYY');
         setStartDate(newStartDate);
         setEndDate(newEndDate);
+        setSelectedEventLinks(selectedEventObj.links || []);
       }
     } else {
       setStartDate(null);
       setEndDate(null);
+      setSelectedEventLinks([]);
     }
   };
 
@@ -45,9 +50,9 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
   };
 
   const handleValidation = () => {
-    console.log("Validation appelée"); // Log pour vérifier si la validation est appelée
-    console.log("Jeu d'images sélectionné :", imageSet); // Log pour vérifier l'imageSet sélectionné
-    console.log("Plage de dates sélectionnée :", startDate, endDate); // Log pour vérifier les dates sélectionnées
+    console.log("Validation appelée");
+    console.log("Jeu d'images sélectionné :", imageSet);
+    console.log("Plage de dates sélectionnée :", startDate, endDate);
 
     setDateRange([startDate, endDate]);
     onImageSetChange(imageSet);
@@ -57,6 +62,8 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
   const handleSpeedChange = (event, newValue) => {
     setAutoplaySpeed(newValue);
   };
+
+  const selectedImageSet = imageSetsData.find((set) => set.value === imageSet);
 
   return (
     <Drawer
@@ -80,7 +87,7 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
         </Box>
         <Divider />
         <Box sx={{ padding: 2 }}>
-          {/* Sélecteur de jeu d'images avec espacement ajouté */}
+          {/* Sélecteur de jeu d'images avec données du fichier JSON */}
           <TextField
             select
             label="Jeu d'images"
@@ -91,11 +98,29 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
             margin="normal"
             sx={{ marginBottom: 2 }}
           >
-            <MenuItem value="geocolor678">Geocolor 678</MenuItem>
-            <MenuItem value="geocolor1808">Geocolor 1808</MenuItem>
-            <MenuItem value="nearIRCirrus678">Near IR Cirrus 678</MenuItem>
-            <MenuItem value="nearIRCirrus5424">Near IR Cirrus 5424</MenuItem>
+            {imageSetsData.map((set) => (
+              <MenuItem key={set.value} value={set.value}>
+                {set.name}
+              </MenuItem>
+            ))}
           </TextField>
+
+          {/* Lien externe pour le jeu d'image sélectionné */}
+          {selectedImageSet && selectedImageSet.url && (
+            <Box sx={{ marginBottom: 2 }}>
+              <Typography sx={{ fontSize: '10px', color: 'grey.900' }}>
+                Plus d&apos;informations sur ce jeu d&apos;images sur{' '}
+                <a
+                  href={selectedImageSet.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="custom-link" // Utilisation de la classe CSS pour appliquer le style du lien
+                >
+                  cette page
+                </a>.
+              </Typography>
+            </Box>
+          )}
 
           {/* Sélecteur d'événement */}
           <TextField
@@ -119,7 +144,6 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
           {/* Affichage conditionnel des datepickers */}
           {!selectedEvent && (
             <>
-              {/* Date de début */}
               <DatePicker
                 label="Date de début"
                 value={startDate}
@@ -150,13 +174,37 @@ const Sidebar = ({ isOpen, onClose, onImageSetChange, dateRange = [null, null], 
             </>
           )}
 
+          {/* Affichage des liens de l'événement sélectionné */}
+          {selectedEventLinks.length > 0 && (
+            <Box sx={{ marginBottom: 2 }}>
+              <Typography sx={{ fontSize: '10px', color: 'grey.900' }}>
+                Pour plus d&apos;informations sur cet événement :
+              </Typography>
+              <Typography sx={{ fontSize: '10px', color: 'grey.900' }}>
+                {selectedEventLinks.map((link, index) => (
+                  <span key={link.url}>
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="custom-link" // Utilisation de la classe CSS pour appliquer les styles
+                    >
+                      {link.name}
+                    </a>
+                    {index < selectedEventLinks.length - 1 && ' - '}
+                  </span>
+                ))}
+              </Typography>
+            </Box>
+          )}
+
           {/* Slider pour la vitesse d'autoplay */}
           <Box sx={{ marginTop: 4 }}>
             <label>Vitesse de défilement (ms): {autoplaySpeed}</label>
             <Slider
               value={autoplaySpeed}
-              min={10}
-              max={2000}
+              min={30}
+              max={1000}
               step={10}
               onChange={handleSpeedChange}
               sx={{ marginBottom: 4 }}

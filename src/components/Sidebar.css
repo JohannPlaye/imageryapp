@@ -15,3 +15,13 @@
 .sidebar button {
   margin: 10px 0;
 }
+
+.custom-link {
+  color: grey; /* Couleur des liens */
+  text-decoration: none;
+}
+
+.custom-link:visited {
+  color: grey; /* Couleur pour les liens visités */
+  text-decoration: none; /* Pas de soulignement pour les liens visités */
+}

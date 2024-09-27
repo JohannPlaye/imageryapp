@@ -12,7 +12,7 @@ const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedImageSet, setSelectedImageSet] = useState('geocolor678');
   const [dateRange, setDateRange] = useState([dayjs().subtract(1, 'day'), dayjs()]);
-  const [autoplaySpeed, setAutoplaySpeed] = useState(40); // Ajout de l'état pour la vitesse d'autoplay
+  const [autoplaySpeed, setAutoplaySpeed] = useState(150); // Ajout de l'état pour la vitesse d'autoplay
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);

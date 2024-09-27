@@ -1,0 +1,33 @@
+[
+    {
+      "name": "Geocolor 678",
+      "value": "geocolor678",
+      "url": "https://www.star.nesdis.noaa.gov/GOES/documents/QuickGuide_CIRA_Geocolor_20171019.pdf"
+    },
+    {
+      "name": "Geocolor 1808",
+      "value": "geocolor1808",
+      "url": "https://www.star.nesdis.noaa.gov/GOES/documents/QuickGuide_CIRA_Geocolor_20171019.pdf"
+    },
+    {
+      "name": "Near IR Cirrus 678",
+      "value": "nearIRCirrus678",
+      "url": "https://www.star.nesdis.noaa.gov/GOES/documents/ABIQuickGuide_Band04.pdf"
+    },
+    {
+      "name": "Near IR Cirrus 5424",
+      "value": "nearIRCirrus5424",
+      "url": "https://www.star.nesdis.noaa.gov/GOES/documents/ABIQuickGuide_Band04.pdf"
+    },
+    {
+      "name": "Airmass RGB Full Disk 1808",
+      "value": "AirMassRGBFD1808",
+      "url": "https://www.star.nesdis.noaa.gov/GOES/documents/QuickGuide_GOESR_AirMassRGB_final.pdf"
+    },
+    {
+      "name": "Airmass RGB Caribbean 2000",
+      "value": "airMassRGBCaribbean2000",
+      "url": "https://www.star.nesdis.noaa.gov/GOES/documents/QuickGuide_GOESR_AirMassRGB_final.pdf"
+    }
+  ]
+  
