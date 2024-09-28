@@ -28,6 +28,11 @@
       "name": "Airmass RGB Caribbean 2000",
       "value": "airMassRGBCaribbean2000",
       "url": "https://www.star.nesdis.noaa.gov/GOES/documents/QuickGuide_GOESR_AirMassRGB_final.pdf"
+    },
+    {
+      "name": "Watervapor BW Full Disk Eumetsat LD",
+      "value": "waterVaporFullDiscEumetsat",
+      "url": "https://www.star.nesdis.noaa.gov/GOES/documents/QuickGuide_GOESR_AirMassRGB_final.pdf"
     }
   ]
   
