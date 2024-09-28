@@ -18,12 +18,15 @@ curl -s "${BASE_URL}index.htm" -o index.htm
 sed -n 's/.*array_nom_imagen\[[0-9]*\]="\([^"]*\)".*/\1/p' index.htm > image_list.txt
 sed -n 's/<option value="[0-9]*">\([^<]*\)<\/option>/\1/p' index.htm > date_list.txt
 
+# Trier les listes extraites par ordre chronologique croissant
+paste -d ',' date_list.txt image_list.txt | sort > sorted_list.txt
+
 # Préparer le fichier JS
 echo "// Ce fichier est généré automatiquement par un script shell" > "$JS_FILE"
 echo "const imageUrls = [" >> "$JS_FILE"
 
-# Parcourir les listes des images et dates trouvées
-while IFS= read -r image_id && IFS= read -r image_date <&3; do
+# Parcourir la liste triée et traiter les images
+while IFS=',' read -r image_date image_id; do
   # Extraire les informations de date et heure
   day=$(echo "$image_date" | awk '{print $1}' | cut -d'/' -f1)
   month=$(echo "$image_date" | awk '{print $1}' | cut -d'/' -f2)
@@ -48,13 +51,13 @@ while IFS= read -r image_id && IFS= read -r image_date <&3; do
   # Ajouter l'URL de l'image au fichier JS
   echo "  '/images/eumetsat/WaterVapor/FD/LR/$new_filename'," >> "$JS_FILE"
   
-done < image_list.txt 3< date_list.txt
+done < sorted_list.txt
 
 # Clôturer le fichier JS
 echo "];" >> "$JS_FILE"
 echo "export default imageUrls;" >> "$JS_FILE"
 
 # Nettoyer les fichiers temporaires
-rm index.htm image_list.txt date_list.txt
+rm index.htm image_list.txt date_list.txt sorted_list.txt
 
 echo "Le fichier JS avec la liste des images a été généré : $JS_FILE"
