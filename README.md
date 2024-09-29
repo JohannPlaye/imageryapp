@@ -104,6 +104,36 @@ Ajouter le nouveau script au répertoire /scripts.
 Mettre à jour le fichier downloadMain.sh pour exécuter automatiquement le nouveau script.
 Ajouter un fichier .js correspondant dans le répertoire /data, qui sera mis à jour automatiquement par le script.
 
+
+## Déploiement (build)
+### Script build
+Le build de l'application s'exécute par un script dédié :
+```bash
+cd scripts/build
+./buildExcludeImage.sh
+```
+Le build produit un dossier "build".
+Lors du build les images présentes dans public/images sont transférées vers un repertoire en dehors de l'app pour ne pas être incluses dans le build.
+A l'issue du build elles sont redéposées dans public/images.
+Les images noaa/geocolor/678 sont copiées dans le build afin que le build dispose d'images à afficher dès son exécution.
+
+## Lancement du build
+Il est recommandé de renommer le dossier "build" en "imageryapp" sur le serveur d'exécution.
+
+Il est recommandé de lancer l'exécution du build avec serve.
+
+Si serve est absent du système exécutant le build :
+```bash
+npm install -g serve
+```
+
+Pour lancer l'app avec serve :
+```bash
+serve -s imageryapp -l 3000
+```
+
+Il est recommandé de lancer la commande précédente au travers d'un script sh et d'inscrire le lancement du script sh au reboot dans un crontab.
+
 ## Licence
 
 Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
