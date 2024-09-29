@@ -48,13 +48,5 @@ else
     exit 1
   fi
 fi
- 
- # Création de la structure du répertoire images sans déplacer les fichers
- cd public
- find ./images -type d -exec mkdir -p ../build/{} \; 
- echo "La strucutre du répertoire images a été créée dans le build."
-
-# Copie du jeu d'images noaa/geocolor/678 dans le build
-cp "$IMAGE_DIR"/noaa/geocolor/678/* "$PROJECT_DIR"/build/images/noaa/geocolor/678
 
 exit 0
