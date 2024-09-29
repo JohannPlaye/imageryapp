@@ -115,7 +115,6 @@ cd scripts/build
 Le build produit un dossier "build".
 Lors du build les images présentes dans public/images sont transférées vers un repertoire en dehors de l'app pour ne pas être incluses dans le build.
 A l'issue du build elles sont redéposées dans public/images.
-Les images noaa/geocolor/678 sont copiées dans le build afin que le build dispose d'images à afficher dès son exécution.
 
 ## Lancement du build
 Il est recommandé de renommer le dossier "build" en "imageryapp" sur le serveur d'exécution.
