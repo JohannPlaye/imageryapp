@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 
 # URL de la page à analyser
 BASE_URL="https://eumetview.eumetsat.int/static-images/MSG/IMAGERY/WV062/BW/FULLDISC/"
-IMAGE_DIR="/mnt/data/imageryapp/images/eumetsat/WaterVapor/FD/LR"  # Répertoire des images locales
+IMAGE_DIR="../public/images/eumetsat/WaterVapor/FD/LR"  # Répertoire des images locales
 JS_FILE="../src/data/waterVaporFullDiscEumetsat.js"  # Fichier JS généré
 
 # Créer le répertoire des images s'il n'existe pas

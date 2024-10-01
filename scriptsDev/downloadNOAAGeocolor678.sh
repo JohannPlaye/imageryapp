@@ -4,9 +4,9 @@
 cd "$(dirname "$0")"
 
 # URL du site où les images sont hébergées
-BASE_URL="https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/04/"
-IMAGE_DIR="mnt/data/imageryapp/images/noaa/nearircirrus/678"  # Chemin relatif au répertoire d'images local
-JS_FILE="../src/data/nearIRCirrus678.js"  # Chemin relatif où le fichier JS sera généré
+BASE_URL="https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/"
+IMAGE_DIR="../public/images/noaa/geocolor/678"  # Chemin relatif au répertoire d'images local
+JS_FILE="../src/data/geocolor678.js"  # Chemin relatif où le fichier JS sera généré
 
 # Créer le répertoire des images s'il n'existe pas
 mkdir -p "$IMAGE_DIR"
@@ -15,7 +15,7 @@ mkdir -p "$IMAGE_DIR"
 curl -s "$BASE_URL" > index.html
 
 # Extraire les fichiers .jpg contenant "GOES16-ABI-FD-GEOCOLOR-678"
-grep -oE 'href="([^"]*GOES16-ABI-FD-04-678[^"]*\.jpg)' index.html | sed 's/^href="//' > image_list.txt
+grep -oE 'href="([^"]*GOES16-ABI-FD-GEOCOLOR-678[^"]*\.jpg)' index.html | sed 's/^href="//' > image_list.txt
 
 # Préparer le fichier JS
 echo "// Ce fichier est généré automatiquement par un script shell" > "$JS_FILE"
@@ -29,7 +29,7 @@ while IFS= read -r image; do
   fi
   
   # Ajouter l'URL de l'image au fichier JS
-  echo "  '/images/noaa/nearircirrus/678/$image'," >> "$JS_FILE"
+  echo "  '/images/noaa/geocolor/678/$image'," >> "$JS_FILE"
 done < image_list.txt
 
 # Clôturer le fichier JS
