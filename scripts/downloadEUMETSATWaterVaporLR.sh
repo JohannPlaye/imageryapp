@@ -49,7 +49,7 @@ while IFS=',' read -r image_date image_id; do
   fi
   
   # Ajouter l'URL de l'image au fichier JS
-  echo "  '/images/eumetsat/WaterVapor/FD/LR/$new_filename'," >> "$JS_FILE"
+  echo "  '/mnt/data/imageryapp/images/eumetsat/WaterVapor/FD/LR/$new_filename'," >> "$JS_FILE"
   
 done < sorted_list.txt
 
