@@ -29,7 +29,7 @@ while IFS= read -r image; do
   fi
   
   # Ajouter l'URL de l'image au fichier JS
-  echo "  '/mnt/data/imageryapp/images/noaa/nearircirrus/678/$image'," >> "$JS_FILE"
+  echo "  '/images/noaa/nearircirrus/678/$image'," >> "$JS_FILE"
 done < image_list.txt
 
 # Clôturer le fichier JS
